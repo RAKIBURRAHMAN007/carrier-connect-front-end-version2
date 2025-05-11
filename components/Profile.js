@@ -7,12 +7,15 @@ import {
   TextInput,
   Image,
   Alert,
+  ScrollView,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker"; // Make sure to install expo-image-picker
+import * as ImagePicker from "expo-image-picker";
 import { AuthContext } from "../Auth/AuthProvider";
 import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import UseAxiosPublic from "../hooks/AxiosPublic";
+import { FontAwesome5, MaterialIcons, Ionicons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
 
 const Profile = () => {
   const { user, logOut } = useContext(AuthContext);
@@ -22,6 +25,7 @@ const Profile = () => {
   const [phone, setPhone] = useState(user?.phone || "");
   const [address, setAddress] = useState(user?.address || "");
   const [image, setImage] = useState(null);
+
   const { data: loggedUser = [], refetch } = useQuery({
     queryKey: [user?.email],
     queryFn: async () => {
@@ -104,11 +108,23 @@ const Profile = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
+      <StatusBar style="light" backgroundColor="#9475d6" />
       <View style={styles.profileContainer}>
-        {editing ? (
-          image ? (
-            <Image source={{ uri: image }} style={styles.profileImage} />
+        <View style={styles.imageWrapper}>
+          {editing ? (
+            image ? (
+              <Image source={{ uri: image }} style={styles.profileImage} />
+            ) : loggedUser?.profileImage ? (
+              <Image
+                source={{ uri: loggedUser.profileImage }}
+                style={styles.profileImage}
+              />
+            ) : (
+              <View style={styles.placeholderImage}>
+                <FontAwesome5 name="user-alt" size={50} color="#aaa" />
+              </View>
+            )
           ) : loggedUser?.profileImage ? (
             <Image
               source={{ uri: loggedUser.profileImage }}
@@ -116,34 +132,18 @@ const Profile = () => {
             />
           ) : (
             <View style={styles.placeholderImage}>
-              <Text style={styles.placeholderText}>No Image</Text>
+              <FontAwesome5 name="user-alt" size={50} color="#aaa" />
             </View>
-          )
-        ) : loggedUser?.profileImage ? (
-          <Image
-            source={{ uri: loggedUser.profileImage }}
-            style={styles.profileImage}
-          />
-        ) : (
-          <View style={styles.placeholderImage}>
-            <Text style={styles.placeholderText}>No Image</Text>
-          </View>
-        )}
+          )}
+          {editing && (
+            <TouchableOpacity onPress={pickImage}>
+              <Text style={styles.changePhotoText}>Change Photo</Text>
+            </TouchableOpacity>
+          )}
+        </View>
 
-        {editing && (
-          <TouchableOpacity onPress={pickImage}>
-            <Text style={styles.changePhotoText}>Change Photo</Text>
-          </TouchableOpacity>
-        )}
-
-        <Text style={styles.profileTitle}>Profile</Text>
-
-        <Text style={styles.profileInfo}>
-          Name: {loggedUser?.name || "Not available"}
-        </Text>
-        <Text style={styles.profileInfo}>
-          Email: {loggedUser?.email || "Not available"}
-        </Text>
+        <Text style={styles.profileTitle}>Welcome, {loggedUser?.name}</Text>
+        <Text style={styles.profileInfo}>Email: {loggedUser?.email}</Text>
 
         {editing ? (
           <>
@@ -176,22 +176,25 @@ const Profile = () => {
       <View style={styles.buttonContainer}>
         {editing ? (
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveButtonText}>Save</Text>
+            <MaterialIcons name="save" size={20} color="#fff" />
+            <Text style={styles.buttonText}> Save</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             style={styles.editButton}
             onPress={() => setEditing(true)}
           >
-            <Text style={styles.editButtonText}>Edit Profile</Text>
+            <Ionicons name="create" size={20} color="#fff" />
+            <Text style={styles.buttonText}> Edit Profile</Text>
           </TouchableOpacity>
         )}
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutButtonText}>Logout</Text>
+          <Ionicons name="log-out-outline" size={20} color="#f44336" />
+          <Text style={{ color: "#f44336" }}> Logout</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -204,47 +207,47 @@ const styles = StyleSheet.create({
   profileContainer: {
     backgroundColor: "#fff",
     padding: 20,
-    borderRadius: 10,
+    borderRadius: 16,
     elevation: 5,
-    marginBottom: 20,
     alignItems: "center",
+    marginBottom: 30,
+    paddingTop: 120,
+  },
+  imageWrapper: {
+    alignItems: "center",
+    marginBottom: 15,
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 110,
+    height: 110,
+    borderRadius: 55,
     marginBottom: 10,
   },
   placeholderImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: "#ccc",
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    backgroundColor: "#ddd",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
   },
-  placeholderText: {
-    color: "#666",
-  },
   changePhotoText: {
-    color: "#9475d6",
-    marginBottom: 10,
+    color: "#7b4fdd",
+    fontWeight: "500",
     textDecorationLine: "underline",
   },
   profileTitle: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#9475d6",
-    textAlign: "center",
-    marginBottom: 10,
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#444",
+    marginBottom: 8,
   },
   profileInfo: {
-    fontSize: 18,
-    color: "#555",
-    marginVertical: 5,
-    textAlign: "left",
-    alignSelf: "flex-start",
+    fontSize: 16,
+    color: "#666",
+    marginVertical: 4,
+    textAlign: "center",
   },
   input: {
     width: "100%",
@@ -252,47 +255,43 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     padding: 10,
     borderRadius: 8,
-    marginVertical: 5,
+    marginVertical: 6,
     fontSize: 16,
   },
   buttonContainer: {
-    alignItems: "center",
+    gap: 12,
   },
   editButton: {
-    backgroundColor: "#9475d6",
+    backgroundColor: "#7b4fdd",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  editButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
+    borderRadius: 10,
   },
   saveButton: {
     backgroundColor: "#4caf50",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  saveButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
+    borderRadius: 10,
   },
   logoutButton: {
-    backgroundColor: "#f44336",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 8,
+    borderRadius: 10,
+    borderColor: "#f44336",
+
+    borderWidth: 1,
   },
-  logoutButtonText: {
+  buttonText: {
     color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontSize: 17,
+    fontWeight: "600",
+    marginLeft: 8,
   },
 });
 

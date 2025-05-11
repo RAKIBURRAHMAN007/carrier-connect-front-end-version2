@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { StatusBar } from "expo-status-bar";
 
 const SeekerJobCard = ({ availableJob }) => {
   const navigation = useNavigation();
@@ -7,6 +8,7 @@ const SeekerJobCard = ({ availableJob }) => {
 
   return (
     <View style={styles.card}>
+      <StatusBar style="light" backgroundColor="#9475d6" />
       <View style={styles.imageContainer}>
         {img && (
           <Image

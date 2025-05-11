@@ -13,6 +13,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../Auth/AuthProvider";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons"; // or Ionicons/Feather
+import { StatusBar } from "expo-status-bar";
 
 const WishList = () => {
   const axiosPublic = UseAxiosPublic();
@@ -49,6 +50,7 @@ const WishList = () => {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="light" backgroundColor="#9475d6" />
       {myWishlist.length === 0 ? (
         <Text style={styles.emptyText}>No jobs in your wishlist</Text>
       ) : (

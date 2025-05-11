@@ -1,3 +1,4 @@
+import { StatusBar } from "expo-status-bar";
 import {
   ScrollView,
   StyleSheet,
@@ -16,6 +17,7 @@ const CareerSupport = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <StatusBar style="light" backgroundColor="#9475d6" />
       <Text style={styles.title}>🎯 Career Support & Interview Prep</Text>
 
       <Text style={styles.description}>

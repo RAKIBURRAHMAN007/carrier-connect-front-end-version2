@@ -20,9 +20,9 @@ const MyAppliedJobs = () => {
   const axiosPublic = UseAxiosPublic();
 
   const { data: seekerApplication = [], refetch } = useQuery({
-    queryKey: ["seekerApplication", user.email],
+    queryKey: ["seekerApplication", user?.email],
     queryFn: async () => {
-      const res = await axiosPublic.get(`/seekerApplication/${user.email}`);
+      const res = await axiosPublic.get(`/seekerApplication/${user?.email}`);
       return res.data;
     },
   });

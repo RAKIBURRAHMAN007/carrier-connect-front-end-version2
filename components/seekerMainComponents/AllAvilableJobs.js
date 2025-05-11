@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, View, TextInput, Text } from "react-native";
 import { useState } from "react";
 import UseAxiosPublic from "../../hooks/AxiosPublic";
 import SeekerJobCard from "./SeekerJobCard";
+import { StatusBar } from "expo-status-bar";
 
 const AllAvilableJobs = () => {
   const axiosPublic = UseAxiosPublic();
@@ -26,6 +27,7 @@ const AllAvilableJobs = () => {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="light" backgroundColor="#9475d6" />
       <TextInput
         style={styles.searchInput}
         placeholder="Search by job title or company"

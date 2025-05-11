@@ -16,6 +16,7 @@ import UseAxiosPublic from "../../hooks/AxiosPublic";
 import Icon from "react-native-vector-icons/Feather";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../Auth/AuthProvider";
+import { StatusBar } from "expo-status-bar";
 
 const JobDetails = () => {
   const route = useRoute();
@@ -100,7 +101,7 @@ const JobDetails = () => {
         company,
         hrEmail,
         img,
-        status: "",
+        status: "pending",
         feedback: "",
         appliedAt: new Date(),
       };
@@ -141,6 +142,7 @@ const JobDetails = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <StatusBar style="light" backgroundColor="#9475d6" />
       <View style={styles.imageContainer}>
         <Image source={{ uri: img }} style={styles.cardImage} />
       </View>

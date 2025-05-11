@@ -3,6 +3,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import animation from "../src/animation/Animation - 1744818293968.json";
 import { useNavigation } from "@react-navigation/native";
+import { StatusBar } from "expo-status-bar";
 
 const WelcomeScreen = () => {
   const navigation = useNavigation();
@@ -25,17 +26,17 @@ const WelcomeScreen = () => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("hrLogin")}
+          onPress={() => navigation.navigate("hrRegister")}
           style={styles.button1}
         >
-          <Text style={styles.buttonText}>Sign In as HR</Text>
+          <Text style={styles.buttonText}>Sign Up as HR</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate("seekerLogin")}
+          onPress={() => navigation.navigate("seekerRegister")}
           style={styles.button2}
         >
-          <Text style={styles.buttonText}>Sign In as Job Seeker</Text>
+          <Text style={styles.buttonText}>Sign Up as Job Seeker</Text>
         </TouchableOpacity>
       </View>
     </View>

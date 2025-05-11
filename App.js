@@ -17,6 +17,8 @@ import {
 } from "@tanstack/react-query";
 import JobDetails from "./components/seekerMainComponents/JobDetails";
 import { NavigationContainer } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 const queryClient = new QueryClient();
 const Stack = createNativeStackNavigator();
 
@@ -62,7 +64,10 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AppContent />
+        <SafeAreaView style={{ flex: 1 }}>
+          <StatusBar style="auto" />
+          <AppContent />
+        </SafeAreaView>
       </AuthProvider>
     </QueryClientProvider>
   );
