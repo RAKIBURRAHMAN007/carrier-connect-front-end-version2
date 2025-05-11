@@ -7,12 +7,14 @@ import {
   ActivityIndicator,
   StyleSheet,
   Alert,
+  TextInput,
+  Modal,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import UseAxiosPublic from "../../hooks/AxiosPublic";
 import Icon from "react-native-vector-icons/Feather";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../../Auth/AuthProvider";
 
 const JobDetails = () => {
@@ -21,6 +23,13 @@ const JobDetails = () => {
   const navigation = useNavigation();
   const { jobId } = route.params;
   const { user } = useContext(AuthContext);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [formData, setFormData] = useState({
+    name: user?.displayName || "",
+    email: user?.email || "",
+    cvLink: "",
+  });
 
   const {
     data: job = {},
@@ -77,10 +86,45 @@ const JobDetails = () => {
     }
   };
 
+  const handleApply = async () => {
+    if (!formData.name || !formData.email || !formData.cvLink) {
+      Alert.alert("Missing Fields", "Please fill in all fields.");
+      return;
+    }
+
+    try {
+      const applicationData = {
+        ...formData,
+        jobTitle,
+        jobId,
+        company,
+        hrEmail,
+        img,
+        status: "",
+        feedback: "",
+        appliedAt: new Date(),
+      };
+
+      const res = await axiosPublic.post("/appliedJobs", applicationData);
+
+      if (res.data.insertedId) {
+        Alert.alert("Success", "Your application has been submitted!");
+        setModalVisible(false);
+        setFormData({ ...formData, cvLink: "" });
+        navigation.reset({
+          routes: [{ name: "My Applied Jobs" }],
+        });
+      }
+    } catch (error) {
+      console.error("Application Error:", error);
+      Alert.alert("Error", "Failed to submit application.");
+    }
+  };
+
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#9475d6" />
       </View>
     );
   }
@@ -137,7 +181,10 @@ const JobDetails = () => {
         ))}
       </View>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => setModalVisible(true)}
+      >
         <Text style={styles.buttonText}>Apply Now</Text>
       </TouchableOpacity>
 
@@ -148,6 +195,52 @@ const JobDetails = () => {
         <Icon name="heart" size={24} color="#e74c3c" />
         <Text style={styles.wishlistText}>Add to Wishlist</Text>
       </TouchableOpacity>
+
+      {/* Modal */}
+      <Modal animationType="slide" transparent={true} visible={modalVisible}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Apply for {jobTitle}</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Your Name"
+              value={formData.name}
+              onChangeText={(text) =>
+                setFormData((prev) => ({ ...prev, name: text }))
+              }
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Your Email"
+              value={formData.email}
+              onChangeText={(text) =>
+                setFormData((prev) => ({ ...prev, email: text }))
+              }
+              keyboardType="email-address"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="CV Link (e.g., Google Drive)"
+              value={formData.cvLink}
+              onChangeText={(text) =>
+                setFormData((prev) => ({ ...prev, cvLink: text }))
+              }
+            />
+
+            <TouchableOpacity style={styles.submitButton} onPress={handleApply}>
+              <Text style={styles.submitButtonText}>Submit Application</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={styles.cancelButton}
+            >
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -257,6 +350,53 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "red",
+    fontSize: 16,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.4)",
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 12,
+    color: "#9475d6",
+    textAlign: "center",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    marginBottom: 12,
+  },
+  submitButton: {
+    backgroundColor: "#9475d6",
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  submitButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  cancelButton: {
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  cancelText: {
+    color: "#888",
     fontSize: 16,
   },
 });

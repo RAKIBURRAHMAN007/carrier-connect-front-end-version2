@@ -15,6 +15,7 @@ import RejectedJobs from "../components/seekerMainComponents/RejectedJobs";
 import WhishList from "../components/seekerMainComponents/WhishList";
 import HrAnalytics from "../components/hrMainComponents/HrAnalytics ";
 import JobDetails from "../components/seekerMainComponents/JobDetails";
+import CareerSupport from "../components/seekerMainComponents/CareerSupport";
 
 const Drawer = createDrawerNavigator();
 
@@ -128,7 +129,7 @@ const MainScreenPage = () => {
           }}
         />
       )}
-      {loggedUser?.role === "seeker" && (
+      {/* {loggedUser?.role === "seeker" && (
         <Drawer.Screen
           name="Rejected Jobs"
           component={RejectedJobs}
@@ -138,7 +139,7 @@ const MainScreenPage = () => {
             ),
           }}
         />
-      )}
+      )} */}
       {loggedUser?.role === "seeker" && (
         <Drawer.Screen
           name="wishList"
@@ -152,9 +153,26 @@ const MainScreenPage = () => {
       )}
       {loggedUser?.role === "seeker" && (
         <Drawer.Screen
+          name="careerSupport"
+          component={CareerSupport}
+          options={{
+            drawerIcon: ({ color }) => (
+              <Ionicons
+                name="chatbubble-ellipses-outline"
+                size={22}
+                color={color}
+              />
+            ),
+          }}
+        />
+      )}
+
+      {loggedUser?.role === "seeker" && (
+        <Drawer.Screen
           name="JobDetails"
           component={JobDetails}
           options={{
+            drawerItemStyle: { display: "none" },
             drawerIcon: ({ color }) => (
               <Ionicons
                 name="information-circle-outline"
