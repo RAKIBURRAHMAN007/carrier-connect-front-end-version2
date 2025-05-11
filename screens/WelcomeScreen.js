@@ -9,6 +9,7 @@ const WelcomeScreen = () => {
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
+      <StatusBar style="light" backgroundColor="#E2E8F0" />
       <View style={styles.animationContainer}>
         <LottieView source={animation} autoPlay loop style={styles.animation} />
       </View>
