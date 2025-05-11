@@ -1,6 +1,3 @@
-import React, { useState } from "react";
-import { useRoute } from "@react-navigation/native";
-import { useQuery } from "@tanstack/react-query";
 import {
   View,
   Text,
@@ -9,16 +6,21 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
-  TextInput,
-  Button,
+  Alert,
 } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useQuery } from "@tanstack/react-query";
 import UseAxiosPublic from "../../hooks/AxiosPublic";
-import Modal from "react-native-modal"; // Import the Modal component
+import Icon from "react-native-vector-icons/Feather";
+import { useContext } from "react";
+import { AuthContext } from "../../Auth/AuthProvider";
 
 const JobDetails = () => {
   const route = useRoute();
   const axiosPublic = UseAxiosPublic();
+  const navigation = useNavigation();
   const { jobId } = route.params;
+  const { user } = useContext(AuthContext);
 
   const {
     data: job = {},
@@ -32,18 +34,47 @@ const JobDetails = () => {
     },
   });
 
-  const [isModalVisible, setModalVisible] = useState(false); // State for modal visibility
-  const [email, setEmail] = useState(""); // State for email input
-  const [cvLink, setCvLink] = useState(""); // State for CV link input
+  const {
+    hrEmail,
+    jobTitle,
+    jobDescription,
+    company,
+    salary,
+    location,
+    img,
+    skills,
+  } = job;
 
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible); // Toggle modal visibility
-  };
+  const handleAddToWishlist = async () => {
+    if (!user?.email) {
+      Alert.alert("Error", "You must be logged in to add to wishlist.");
+      return;
+    }
 
-  const handleApply = () => {
-    // Handle the apply logic here (e.g., sending email and CV link to server)
-    console.log("Email:", email, "CV Link:", cvLink);
-    toggleModal(); // Close modal after applying
+    const data = {
+      jobTitle,
+      jobDescription,
+      company,
+      salary,
+      location,
+      img,
+      skills,
+      JobId: jobId,
+      email: user.email,
+    };
+
+    try {
+      const res = await axiosPublic.post("/wishlist", data);
+      if (res.data.insertedId) {
+        Alert.alert("Success", "Job added to wishlist successfully!");
+        navigation.reset({
+          routes: [{ name: "wishList" }],
+        });
+      }
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      Alert.alert("Error", "Failed to add to wishlist.");
+    }
   };
 
   if (isLoading) {
@@ -64,22 +95,12 @@ const JobDetails = () => {
     );
   }
 
-  const {
-    hrEmail,
-    jobTitle,
-    jobDescription,
-    company,
-    salary,
-    location,
-    img,
-    skills,
-  } = job;
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.imageContainer}>
         <Image source={{ uri: img }} style={styles.cardImage} />
       </View>
+
       <Text style={styles.title}>{jobTitle}</Text>
 
       <View style={styles.section}>
@@ -116,33 +137,17 @@ const JobDetails = () => {
         ))}
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={toggleModal}>
+      <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Apply Now</Text>
       </TouchableOpacity>
 
-      {/* Modal for application form */}
-      <Modal isVisible={isModalVisible} onBackdropPress={toggleModal}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Apply for {jobTitle}</Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your email"
-            value={email}
-            onChangeText={setEmail}
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Enter CV link"
-            value={cvLink}
-            onChangeText={setCvLink}
-          />
-
-          <Button title="Submit Application" onPress={handleApply} />
-          <Button title="Cancel" onPress={toggleModal} />
-        </View>
-      </Modal>
+      <TouchableOpacity
+        style={styles.wishlistButton}
+        onPress={handleAddToWishlist}
+      >
+        <Icon name="heart" size={24} color="#e74c3c" />
+        <Text style={styles.wishlistText}>Add to Wishlist</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -150,8 +155,8 @@ const JobDetails = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    paddingBottom: 200,
-    marginTop: 20,
+    paddingBottom: 120,
+    backgroundColor: "#fff",
   },
   imageContainer: {
     justifyContent: "center",
@@ -228,24 +233,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
   },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
+  wishlistButton: {
+    flexDirection: "row",
     alignItems: "center",
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  input: {
-    width: "100%",
-    padding: 10,
-    marginBottom: 15,
+    justifyContent: "center",
+    marginTop: 25,
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
+    borderColor: "#e74c3c",
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: "#fff",
+  },
+  wishlistText: {
+    fontSize: 16,
+    marginLeft: 8,
+    color: "#e74c3c",
+    fontWeight: "600",
   },
   center: {
     flex: 1,
