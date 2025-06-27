@@ -3,6 +3,9 @@
     "name": "cc_frontEnd-v2",
     "slug": "cc_frontEnd-v2",
     "version": "1.0.0",
-    "newArchEnabled": true
+    "newArchEnabled": true,
+    "updates": {
+      "enabled": false
+    }
   }
 }
