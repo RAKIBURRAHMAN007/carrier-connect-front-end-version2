@@ -75,7 +75,7 @@ const HrJobCard = ({ job, refetch }) => {
         <Text style={styles.jobTitle}>Job Title: {jobTitle}</Text>
         <Text style={styles.company}>Company: {company}</Text>
         <Text style={styles.jobDescription}>Description: {jobDescription}</Text>
-        <Text style={styles.salary}>Salary: {salary}</Text>
+        <Text style={styles.salary}>Salary: {salary} Tk</Text>
         <Text style={styles.location}>Location: {location}</Text>
         {skills && (
           <View style={{ marginBottom: 12 }}>
