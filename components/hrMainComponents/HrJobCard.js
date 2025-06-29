@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+
 import {
   Alert,
   Image,
@@ -95,10 +97,10 @@ const HrJobCard = ({ job, refetch }) => {
             style={styles.updateButton}
             onPress={() => setModalVisible(true)}
           >
-            <Icon name="edit" size={20} color="#fff" />
+            <Ionicons name="create-outline" size={20} color="#fff" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-            <Icon name="trash" size={20} color="#fff" />
+            <Ionicons name="trash-outline" size={20} color="#fff" />
           </TouchableOpacity>
         </View>
       </View>
