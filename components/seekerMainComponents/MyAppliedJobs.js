@@ -108,7 +108,7 @@ const MyAppliedJobs = () => {
                   status !== "rejected" && { color: "#f39c12" }, // orange for pending
               ]}
             >
-              {status === "available"
+              {status === "accepted"
                 ? "Accepted"
                 : status === "rejected"
                 ? "Rejected"
